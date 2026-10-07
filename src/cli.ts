@@ -53,12 +53,13 @@ export function createCli() {
     .command("talk")
     .description("Send one shot prompt to the agent ")
     .argument("<prompt>", "the prompt to send to the agent")
+    .option("-v, --verbose", "Show verbose output")
     .action(async (prompt:string) =>{
       requireApiKey();
       await runQuery(prompt);
     });
 
-
+   
 
 
 
