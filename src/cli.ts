@@ -47,8 +47,6 @@ export function createCli() {
       console.log(chalk.green("✅ Anthropic API key is set"));
     });
 
- 
-
     program.action(() => {
         program.help();
     })
