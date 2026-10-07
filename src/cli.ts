@@ -3,6 +3,16 @@ import { printBanner } from "./ui/banner.js";
 import chalk from "chalk";
 import { requireApiKey } from "./config/env.js";
 import { runQuery } from "./agent/run-query.js";
+import { CliMode, parseCliMode } from "./agent/modes.js";
+
+
+  function parseMode(value: string): CliMode {
+    const mode = parseCliMode(value);
+    if (!mode) {
+      throw new Error(`Invalid mode "${value}". Use agent, ask, or plan.`);
+    }
+    return mode;
+  }
 
 export function createCli() {
     
@@ -18,6 +28,21 @@ export function createCli() {
     .action(() =>{
         console.log("Hello World")
     });
+
+    program
+    .command("wakeup")
+    .description("Send a one-shot prompt to the agent")
+    .argument("<prompt>", "What to ask Claude")
+    .option("-m, --mode <mode>", "agent | ask | plan", "agent")
+    .option("-v, --verbose", "Show agent loop message types", false)
+    .action(async (prompt: string, opts: {mode?: CliMode, verbose?: boolean}) =>{
+        requireApiKey();
+        await runQuery(prompt, {mode: parseMode(opts.mode ?? "agent"), verbose: opts.verbose});
+    });
+
+
+
+
 
     program
     .command("banner")
@@ -54,9 +79,9 @@ export function createCli() {
     .description("Send one shot prompt to the agent ")
     .argument("<prompt>", "the prompt to send to the agent")
     .option("-v, --verbose", "Show verbose output")
-    .action(async (prompt:string) =>{
+    .action(async (prompt:string, opts: {verbose?: boolean}) =>{
       requireApiKey();
-      await runQuery(prompt);
+      await runQuery(prompt, {verbose: opts.verbose});
     });
 
    
